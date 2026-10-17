@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -142,7 +144,15 @@ internal fun MessagesViewTopBar(
             }
         },
         actions = menuActions,
-        windowInsets = WindowInsets(0.dp)
+        windowInsets = WindowInsets(0.dp),
+        // Krantas: цветная шапка чата с белым текстом и значками
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = ElementTheme.colors.bgAccentRest,
+            scrolledContainerColor = ElementTheme.colors.bgAccentRest,
+            titleContentColor = Color.White,
+            navigationIconContentColor = Color.White,
+            actionIconContentColor = Color.White,
+        ),
     )
 }
 
@@ -171,7 +181,7 @@ private fun RoomAvatarAndNameRow(
             status = dmUserStatus,
             modifier = Modifier.padding(start = 8.dp),
             style = ElementTheme.typography.fontBodyLgMedium,
-            nameColor = ElementTheme.colors.textPrimary,
+            nameColor = Color.White,
             nameFontStyle = FontStyle.Italic.takeIf { roomName == null },
         )
     }

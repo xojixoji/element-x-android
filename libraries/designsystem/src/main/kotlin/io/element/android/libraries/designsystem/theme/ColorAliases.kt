@@ -41,12 +41,18 @@ val SemanticColors.placeholderBackground
 // This color is not present in Semantic color, so put hard-coded value for now
 @OptIn(CoreColorToken::class)
 val SemanticColors.messageFromMeBackground
-    get() = if (isLight) LightColorTokens.colorGray400 else DarkColorTokens.colorGray500
+    // Krantas: свои сообщения светло-синие, как в Telegram
+    get() = if (isLight) Color(0xFFD6EAFB) else Color(0xFF2B5278)
 
 // This color is not present in Semantic color, so put hard-coded value for now
 @OptIn(CoreColorToken::class)
 val SemanticColors.messageFromOtherBackground
-    get() = if (isLight) LightColorTokens.colorGray300 else DarkColorTokens.colorGray400
+    // Krantas: чужие сообщения белые на цветном фоне чата
+    get() = if (isLight) Color(0xFFFFFFFF) else Color(0xFF182533)
+
+/** Krantas: фон ленты сообщений, как фон чата в Telegram. */
+val SemanticColors.krantasTimelineBackground
+    get() = if (isLight) Color(0xFFDFE7EE) else Color(0xFF0E1621)
 
 // This color is not present in Semantic color, so put hard-coded value for now
 @OptIn(CoreColorToken::class)

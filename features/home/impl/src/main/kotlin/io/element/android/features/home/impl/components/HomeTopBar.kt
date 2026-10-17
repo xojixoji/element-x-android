@@ -8,6 +8,7 @@
 
 package io.element.android.features.home.impl.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -63,7 +64,7 @@ import io.element.android.compound.tokens.generated.CompoundIcons
 import io.element.android.features.home.impl.HomeNavigationBarItem
 import io.element.android.features.home.impl.R
 import io.element.android.features.home.impl.filters.RoomListFiltersState
-import io.element.android.features.home.impl.filters.RoomListFiltersView
+import io.element.android.features.home.impl.filters.KrantasFolderTabs
 import io.element.android.features.home.impl.filters.aRoomListFiltersState
 import io.element.android.features.home.impl.spacefilters.SpaceFiltersEvent
 import io.element.android.features.home.impl.spacefilters.SpaceFiltersState
@@ -74,7 +75,6 @@ import io.element.android.libraries.designsystem.components.TopAppBarScrollBehav
 import io.element.android.libraries.designsystem.components.avatar.Avatar
 import io.element.android.libraries.designsystem.components.avatar.AvatarSize
 import io.element.android.libraries.designsystem.components.avatar.AvatarType
-import io.element.android.libraries.designsystem.modifiers.backgroundVerticalGradient
 import io.element.android.libraries.designsystem.preview.ElementPreview
 import io.element.android.libraries.designsystem.preview.PreviewsDayNight
 import io.element.android.libraries.designsystem.preview.USER_NAME_ALICE
@@ -100,6 +100,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
+private const val KRANTAS_TITLE = "Krantas"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(
@@ -119,24 +121,28 @@ fun HomeTopBar(
     modifier: Modifier = Modifier,
 ) {
     val contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()
-    Column(modifier) {
+    // Krantas: сплошная цветная шапка с белым текстом и вкладками-папками, как в Telegram
+    Column(
+        modifier
+            .background(ElementTheme.colors.bgAccentRest)
+            .statusBarsPadding()
+    ) {
         TopAppBar(
             modifier = Modifier
-                .backgroundVerticalGradient(
-                    isVisible = !areSearchResultsDisplayed,
-                )
-                .statusBarsPadding()
                 .padding(contentPadding),
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent,
                 scrolledContainerColor = Color.Transparent,
+                titleContentColor = Color.White,
+                navigationIconContentColor = Color.White,
+                actionIconContentColor = Color.White,
             ),
             title = {
                 val displayTitle = when (selectedNavigationItem) {
                     HomeNavigationBarItem.Chats -> {
                         when (spaceFiltersState) {
                             is SpaceFiltersState.Selected -> spaceFiltersState.selectedFilter.spaceRoom.displayName
-                            else -> stringResource(selectedNavigationItem.labelRes)
+                            else -> KRANTAS_TITLE
                         }
                     }
                     HomeNavigationBarItem.Spaces -> null
@@ -181,11 +187,9 @@ fun HomeTopBar(
         )
         if (displayFilters) {
             TopAppBarScrollBehaviorLayout(scrollBehavior = scrollBehavior) {
-                RoomListFiltersView(
+                KrantasFolderTabs(
                     state = filtersState,
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .padding(contentPadding)
+                    modifier = Modifier.padding(contentPadding),
                 )
             }
         }

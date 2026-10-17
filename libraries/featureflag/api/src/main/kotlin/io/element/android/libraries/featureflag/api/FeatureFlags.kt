@@ -128,7 +128,7 @@ enum class FeatureFlags(
         key = "feature.unread_indicator_count",
         title = "Unread indicator count",
         description = "Show the number of unread messages on the unread indicator in the room list.",
-        defaultValue = { false },
+        defaultValue = { true },
         isFinished = false,
     ),
     SendGalleryMessages(

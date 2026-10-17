@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Krantas: строки, которых нет в Element X -->
+<resources>
+    <string name="krantas_folder_all">All</string>
+</resources>

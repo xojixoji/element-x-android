@@ -94,6 +94,7 @@ import io.element.android.features.messages.impl.timeline.model.event.TimelineIt
 import io.element.android.features.messages.impl.timeline.protection.TimelineProtectionState
 import io.element.android.features.messages.impl.timeline.protection.aTimelineProtectionState
 import io.element.android.libraries.androidutils.system.copyToClipboard
+import io.element.android.libraries.designsystem.theme.krantasTimelineBackground
 import io.element.android.libraries.designsystem.atomic.atoms.UnreadIndicatorAtom
 import io.element.android.libraries.designsystem.components.dialogs.AlertDialog
 import io.element.android.libraries.designsystem.preview.ElementPreview
@@ -197,7 +198,8 @@ fun TimelineView(
             )
         }
         CompositionLocalProvider(LocalTimelineEventRendererConfig provides composeLocalTimelineEventRendererConfig) {
-            Box(modifier) {
+            // Krantas: цветной фон ленты, на нём белые и синие пузыри
+            Box(modifier.background(ElementTheme.colors.krantasTimelineBackground)) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()

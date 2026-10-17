@@ -70,7 +70,7 @@ import io.element.android.libraries.matrix.ui.model.InviteSender
 import io.element.android.libraries.ui.strings.CommonStrings
 import timber.log.Timber
 
-internal val minHeight = 84.dp
+internal val minHeight = 72.dp
 
 @Composable
 internal fun RoomSummaryRow(
@@ -194,8 +194,9 @@ private fun RoomSummaryScaffoldRow(
             .fillMaxWidth()
             .heightIn(min = minHeight)
             .then(clickModifier)
-            .padding(horizontal = 16.dp, vertical = 11.dp)
+            .padding(horizontal = 12.dp, vertical = 9.dp)
             .height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Avatar(
             avatarData = room.avatarData,
@@ -209,9 +210,10 @@ private fun RoomSummaryScaffoldRow(
             },
             hideImage = hideAvatarImage,
         )
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
             content = content,
         )
     }
@@ -335,8 +337,9 @@ private fun MessagePreviewAndIndicatorRow(
                     text = annotatedMessagePreview,
                     color = ElementTheme.colors.roomListRoomMessage,
                     style = ElementTheme.typography.fontBodyMdRegular,
-                    minLines = 2,
-                    maxLines = 2,
+                    // Krantas: превью в одну строку, как в Telegram
+                    minLines = 1,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
@@ -345,7 +348,7 @@ private fun MessagePreviewAndIndicatorRow(
         // Call and unread
         Row(
             modifier = Modifier
-                .height(16.dp)
+                .height(22.dp)
                 // Used to force this line to be read aloud earlier than the latest event when using Talkback
                 .zIndex(-1f),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
