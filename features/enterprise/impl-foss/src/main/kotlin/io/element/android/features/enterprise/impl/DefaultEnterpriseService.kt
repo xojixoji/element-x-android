@@ -34,9 +34,11 @@ class DefaultEnterpriseService(
 ) : EnterpriseService {
     override suspend fun isEnterpriseUser(sessionId: SessionId) = false
     override suspend fun tweakMasUrl(url: String, urlContentFetcher: ClientUrlContentFetcher) = url
-    override fun accountProviderAllowList(): List<AccountProvider> = emptyList()
-    override fun canConnectToAnyAccountProvider(): Boolean = true
-    override suspend fun isAllowedToConnectToAccountProvider(accountProvider: AccountProvider) = true
+    // Krantas: приложение работает только с сервером компании
+    override fun accountProviderAllowList(): List<AccountProvider> = listOf(KrantasBranding.accountProvider)
+    override fun canConnectToAnyAccountProvider(): Boolean = false
+    override suspend fun isAllowedToConnectToAccountProvider(accountProvider: AccountProvider) =
+        accountProviderAllowList().any { it.matches(accountProvider) }
     override suspend fun isElementProEnforced(serverName: String): Boolean {
         val temporaryMatrixClient = temporaryMatrixClientFactory.create(serverName).getOrElse { return false }
         return temporaryMatrixClient.use { client ->
@@ -61,7 +63,7 @@ class DefaultEnterpriseService(
     }
 
     override fun semanticColorsFlow(sessionId: SessionId?): Flow<SemanticColorsLightDark> {
-        return flowOf(SemanticColorsLightDark.default)
+        return flowOf(KrantasBranding.colors)
     }
 
     override fun firebasePushGateway(): String? = null

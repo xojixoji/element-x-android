@@ -87,6 +87,13 @@ android {
             storeFile = file("./signature/debug.keystore")
             storePassword = "android"
         }
+        // Krantas: свой ключ подписи релиза; в CI приходит из секретов, файл в репозиторий не кладётся
+        register("krantas") {
+            keyAlias = System.getenv("KRANTAS_KEY_ALIAS")
+            keyPassword = System.getenv("KRANTAS_KEY_PASSWORD")
+            storeFile = System.getenv("KRANTAS_KEYSTORE")?.let { file(it) }
+            storePassword = System.getenv("KRANTAS_STORE_PASSWORD")
+        }
         register("nightly") {
             keyAlias = System.getenv("ELEMENT_ANDROID_NIGHTLY_KEYID")
                 ?: project.property("signing.element.nightly.keyId") as? String?
@@ -122,7 +129,7 @@ android {
                 "login_redirect_scheme",
                 oAuthRedirectSchemeBase,
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (System.getenv("KRANTAS_KEYSTORE") != null) signingConfigs.getByName("krantas") else signingConfigs.getByName("debug")
 
             optimization {
                 enable = true

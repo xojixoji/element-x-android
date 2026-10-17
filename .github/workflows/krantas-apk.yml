@@ -1,0 +1,74 @@
+name: Krantas APK
+
+# Сборка APK «Krantas» (вариант fdroid: без Google Firebase, своё имя, иконка и сервер компании).
+# Запуск вручную или пушем в ветку krantas. Ключ подписи берётся из секретов репозитория:
+#   KRANTAS_KEYSTORE_B64, KRANTAS_KEY_ALIAS, KRANTAS_KEY_PASSWORD, KRANTAS_STORE_PASSWORD
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ krantas ]
+    tags: [ 'krantas-*' ]
+
+permissions:
+  contents: write
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx8g -XX:MaxMetaspaceSize=512m -Dfile.encoding=UTF-8 -XX:+UseG1GC -Dkotlin.daemon.jvm.options=-Xmx4g
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be
+        with:
+          tool-cache: true
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Use JDK 21
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Configure gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+      - name: Restore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.KRANTAS_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/krantas.jks"
+            echo "KRANTAS_KEYSTORE=$RUNNER_TEMP/krantas.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Нет секрета KRANTAS_KEYSTORE_B64 — APK подписан тестовым ключом"
+          fi
+      - name: Build release APK
+        env:
+          KRANTAS_KEY_ALIAS: ${{ secrets.KRANTAS_KEY_ALIAS }}
+          KRANTAS_KEY_PASSWORD: ${{ secrets.KRANTAS_KEY_PASSWORD }}
+          KRANTAS_STORE_PASSWORD: ${{ secrets.KRANTAS_STORE_PASSWORD }}
+        run: ./gradlew :app:assembleFDroidRelease --stacktrace --no-configuration-cache
+      - name: Collect APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/fdroid/release/*-universal-release.apk "out/krantas-${GITHUB_SHA::7}.apk"
+          ls -la out
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: krantas-apk
+          path: out/*.apk
+          retention-days: 30
+      - name: Publish release for tag
+        if: startsWith(github.ref, 'refs/tags/krantas-')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" out/*.apk --title "$GITHUB_REF_NAME" --notes "Сборка Krantas на основе Element X Android" --prerelease
